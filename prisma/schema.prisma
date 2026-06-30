@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Pharmacy {
+  id                    Int       @id @default(autoincrement())
+  name                  String
+  address               String?
+  city                  String?
+  state                 String?
+  zip                   String?
+  phone                 String?
+  website               String?
+  specialty             String?
+  numLocations          Int?
+  ownerName             String?
+  pharmacistInCharge    String?
+  ownerEmail            String?
+  linkedin              String?
+  benefitScore          Int?
+  priority              String?
+  estimatedSize         String?
+
+  // Sales fields
+  status                String    @default("Not Contacted")
+  contacted             Boolean   @default(false)
+  firstContactDate      DateTime?
+  lastContactDate       DateTime?
+  nextFollowUpDate      DateTime?
+  preferredContactMethod String?
+  decisionMaker         String?
+  probabilityOfClosing  Float?
+  expectedMonthlyValue  Float?
+  lifetimeValue         Float?
+  source                String?
+
+  isFavorite            Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  notes                 Note[]
+  tasks                 Task[]
+  activityLogs          ActivityLog[]
+  tags                  PharmacyTag[]
+}
+
+model Note {
+  id          Int      @id @default(autoincrement())
+  pharmacyId  Int
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  color       String        @default("#6366f1")
+  pharmacies  PharmacyTag[]
+}
+
+model PharmacyTag {
+  pharmacyId  Int
+  tagId       Int
+  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  tag         Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([pharmacyId, tagId])
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  pharmacyId  Int
+  type        String
+  title       String
+  dueDate     DateTime?
+  completed   Boolean  @default(false)
+  priority    String   @default("Medium")
+  createdAt   DateTime @default(now())
+
+  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+}
+
+model ActivityLog {
+  id          Int      @id @default(autoincrement())
+  pharmacyId  Int
+  action      String
+  detail      String?
+  createdAt   DateTime @default(now())
+
+  pharmacy    Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+}

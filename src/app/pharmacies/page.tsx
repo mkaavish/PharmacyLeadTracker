@@ -1,0 +1,10 @@
+import { Suspense } from "react";
+import PharmacyListClient from "@/components/pharmacies/PharmacyListClient";
+
+export default function PharmaciesPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+      <PharmacyListClient />
+    </Suspense>
+  );
+}
